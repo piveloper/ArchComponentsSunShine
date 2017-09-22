@@ -40,4 +40,8 @@ dependencies {
     androidTestCompile "com.android.support:support-annotations:$support_version"
     androidTestCompile "com.android.support.test:runner:$support_test_version"
     androidTestCompile "com.android.support.test:rules:$support_test_version"
+
+    // room
+    compile "android.arch.persistence.room:runtime:$arch_version"
+    annotationProcessor "android.arch.persistence.room:compiler:$arch_version"
 }
