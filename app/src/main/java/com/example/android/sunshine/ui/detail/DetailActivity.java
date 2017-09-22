@@ -53,14 +53,18 @@ public class DetailActivity extends LifecycleActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(Timber.treeCount()<=0) Timber.plant(new Timber.DebugTree());
+        Timber.d("On Create");
+
         mDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
         long timestamp = getIntent().getLongExtra(WEATHER_ID_EXTRA, -1);
         Date date = new Date(timestamp);
 
-
         mViewModel = ViewModelProviders.of(this).get(DetailActivityViewModel.class);
+        Timber.d("ViewModelProvided");
         mViewModel.getWeather().observe(this, weatherEntry -> {
             if(weatherEntry != null) bindWeatherToUI(weatherEntry);
+            Timber.d("Update UI");
         });
 
         AppExecutors.getInstance().diskIO().execute(()-> {
