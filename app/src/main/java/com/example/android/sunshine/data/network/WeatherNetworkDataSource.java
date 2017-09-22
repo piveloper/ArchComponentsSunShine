@@ -15,11 +15,13 @@
  */
 package com.example.android.sunshine.data.network;
 
+import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
 import com.example.android.sunshine.AppExecutors;
+import com.example.android.sunshine.data.database.WeatherEntry;
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.Driver;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
@@ -35,6 +37,13 @@ import java.util.concurrent.TimeUnit;
  * Provides an API for doing all operations with the server data
  */
 public class WeatherNetworkDataSource {
+    // Live Data storing the latest downloaded weather forecasts
+    private final MutableLiveData<WeatherEntry[]> mDownloadWeatherForecasts;
+
+    public MutableLiveData<WeatherEntry[]> getCurrrentWeatherForecasts() {
+        return mDownloadWeatherForecasts;
+    }
+
     // The number of days we want our API to return, set to 14 days or two weeks
     public static final int NUM_DAYS = 14;
     private static final String LOG_TAG = WeatherNetworkDataSource.class.getSimpleName();
@@ -56,6 +65,7 @@ public class WeatherNetworkDataSource {
     private WeatherNetworkDataSource(Context context, AppExecutors executors) {
         mContext = context;
         mExecutors = executors;
+        mDownloadWeatherForecasts = new MutableLiveData<>();
     }
 
     /**
@@ -167,6 +177,7 @@ public class WeatherNetworkDataSource {
 
                     // TODO Finish this method when instructed.
                     // Will eventually do something with the downloaded data
+                    mDownloadWeatherForecasts.postValue(response.getWeatherForecast());
                 }
             } catch (Exception e) {
                 // Server probably invalid
