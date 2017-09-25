@@ -19,9 +19,9 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
 
-import com.example.android.sunshine.utilities.InjectorUtils;
+import com.example.android.sunshine.SunshineApplication;
 
-import timber.log.Timber;
+import javax.inject.Inject;
 
 /**
  * An {@link IntentService} subclass for immediately scheduling a sync with the server off of the
@@ -36,11 +36,14 @@ public class SunshineSyncIntentService extends IntentService {
         super("SunshineSyncIntentService");
     }
 
+    @Inject
+    WeatherNetworkDataSource mNetworkDataSource;
+
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.d(LOG_TAG, "Intent service started");
+        ((SunshineApplication)getApplication()).getApplicationComponent().inject(this);
         // TODO Finish this method when instructed. Will eventually call the fetch weather code
-        WeatherNetworkDataSource networkDataSource = InjectorUtils.provideNetworkDataSource(this.getApplicationContext());
-        networkDataSource.fetchWeather();
+        mNetworkDataSource.fetchWeather();
     }
 }

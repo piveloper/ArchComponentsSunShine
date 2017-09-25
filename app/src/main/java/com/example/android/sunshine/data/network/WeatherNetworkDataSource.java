@@ -22,6 +22,7 @@ import android.util.Log;
 
 import com.example.android.sunshine.AppExecutors;
 import com.example.android.sunshine.data.database.WeatherEntry;
+import com.example.android.sunshine.di.qualifiers.ApplicationContext;
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.Driver;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
@@ -33,9 +34,13 @@ import com.firebase.jobdispatcher.Trigger;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * Provides an API for doing all operations with the server data
  */
+@Singleton
 public class WeatherNetworkDataSource {
     // Live Data storing the latest downloaded weather forecasts
     private final MutableLiveData<WeatherEntry[]> mDownloadWeatherForecasts;
@@ -55,31 +60,15 @@ public class WeatherNetworkDataSource {
     private static final int SYNC_FLEXTIME_SECONDS = SYNC_INTERVAL_SECONDS / 3;
     private static final String SUNSHINE_SYNC_TAG = "sunshine-sync";
 
-    // For Singleton instantiation
-    private static final Object LOCK = new Object();
-    private static WeatherNetworkDataSource sInstance;
     private final Context mContext;
 
     private final AppExecutors mExecutors;
 
-    private WeatherNetworkDataSource(Context context, AppExecutors executors) {
+    @Inject
+    public WeatherNetworkDataSource(@ApplicationContext Context context, AppExecutors executors) {
         mContext = context;
         mExecutors = executors;
         mDownloadWeatherForecasts = new MutableLiveData<>();
-    }
-
-    /**
-     * Get the singleton for this class
-     */
-    public static WeatherNetworkDataSource getInstance(Context context, AppExecutors executors) {
-        Log.d(LOG_TAG, "Getting the network data source");
-        if (sInstance == null) {
-            synchronized (LOCK) {
-                sInstance = new WeatherNetworkDataSource(context.getApplicationContext(), executors);
-                Log.d(LOG_TAG, "Made new network data source");
-            }
-        }
-        return sInstance;
     }
 
     /**

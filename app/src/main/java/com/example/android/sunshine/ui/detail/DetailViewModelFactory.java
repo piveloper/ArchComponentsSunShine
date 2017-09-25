@@ -23,15 +23,20 @@ import com.example.android.sunshine.data.SunshineRepository;
 
 import java.util.Date;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * Factory method that allows us to create a ViewModel with a constructor that takes a
  * {@link SunshineRepository} and an ID for the current {@link WeatherEntry}
  */
+@Singleton
 public class DetailViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 
     private final SunshineRepository mRepository;
     private final Date mDate;
 
+    @Inject
     public DetailViewModelFactory(SunshineRepository repository, Date date) {
         this.mRepository = repository;
         this.mDate = date;

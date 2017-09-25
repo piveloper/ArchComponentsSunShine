@@ -19,18 +19,15 @@ import android.arch.lifecycle.LifecycleActivity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
-import com.example.android.sunshine.AppExecutors;
 import com.example.android.sunshine.R;
+import com.example.android.sunshine.SunshineApplication;
 import com.example.android.sunshine.data.database.WeatherEntry;
 import com.example.android.sunshine.databinding.ActivityDetailBinding;
-import com.example.android.sunshine.utilities.InjectorUtils;
 import com.example.android.sunshine.utilities.SunshineDateUtils;
 import com.example.android.sunshine.utilities.SunshineWeatherUtils;
 
-import java.util.Date;
+import javax.inject.Inject;
 
 import timber.log.Timber;
 
@@ -51,18 +48,21 @@ public class DetailActivity extends LifecycleActivity {
      */
     private ActivityDetailBinding mDetailBinding;
 
+    @Inject
+    DetailViewModelFactory mFactory;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ((SunshineApplication) getApplication()).getApplicationComponent().inject(this);
         super.onCreate(savedInstanceState);
-        if(Timber.treeCount()<=0) Timber.plant(new Timber.DebugTree());
+        //if(Timber.treeCount()<=0) Timber.plant(new Timber.DebugTree());
+
         Timber.d("On Create");
 
         mDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
         long timestamp = getIntent().getLongExtra(WEATHER_ID_EXTRA, -1);
-        Date date = SunshineDateUtils.getNormalizedUtcDateForToday();
 
-        DetailViewModelFactory factory = InjectorUtils.provideDetailViewModelFactory(this, date);
-        mViewModel = ViewModelProviders.of(this, factory).get(DetailActivityViewModel.class);
+        mViewModel = ViewModelProviders.of(this, mFactory).get(DetailActivityViewModel.class);
 
         Timber.d("ViewModelProvided");
         mViewModel.getWeather().observe(this, weatherEntry -> {
